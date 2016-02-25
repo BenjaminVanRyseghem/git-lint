@@ -1,0 +1,44 @@
+{
+  "name": "git-lint",
+  "description": "A git commit message linter",
+  "version": "0.1.0",
+  "homepage": "https://github.com/BenjaminVanRyseghem/git-lint",
+  "author": {
+    "name": "Benjamin Van Ryseghem",
+    "url": "benjamin.vanryseghem.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/BenjaminVanRyseghem/git-lint.git"
+  },
+  "bugs": {
+    "url": "https://github.com/BenjaminVanRyseghem/git-lint/issues"
+  },
+  "licenses": [
+    {
+      "type": "GPL-3.0",
+      "url": "https://github.com/BenjaminVanRyseghem/git-lint/blob/master/LICENSE"
+    }
+  ],
+  "keywords": [
+    "cli",
+    "command line",
+    "git",
+    "linter"
+  ],
+  "preferGlobal": true,
+  "bin": {
+    "gitlint": "./bin/gitlint"
+  },
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.8"
+  },
+  "scripts": {
+    "test": "mocha -R test"
+  },
+  "dependencies": {
+    "minimist": "~0.0.8",
+    "verbalize": "~0.1.1"
+  }
+}

@@ -1,0 +1,36 @@
+#!/usr/bin/env node
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+const log = require("verbalize");
+const argv = process.argv.slice()[2];
+
+function validateMessage(string) {
+	console.dir(string);
+	return 1;
+}
+
+function initialize() {
+	// console.log(`Current directory: ${process.cwd()}`);
+	parseArguments(argv);
+}
+
+function displayHelp() {
+	console.log("foo");
+}
+
+function parseArguments(commitMessageTmpFile) {
+	if (!commitMessageTmpFile) {
+		displayHelp();
+		process.exit(1);
+	}
+
+	console.dir(commitMessageTmpFile);
+	let message = fs.readFileSync(commitMessageTmpFile, "utf8");
+	let result = validateMessage(message);
+
+	process.exit(result);
+}
+
+initialize();
