@@ -71,6 +71,22 @@ describe("fetchOptions", function() {
 		expect(fetchOptions._mergeOptions(bottom, top)).toEqual(expectedOptions);
 	});
 
+	it("merging is done deep", () => {
+		let bottom = {a: {b: 5}};
+		let top = {a: {c: 9}};
+		let expectedOptions = {a: {b: 5, c: 9}};
+
+		expect(fetchOptions._mergeOptions(bottom, top)).toEqual(expectedOptions);
+	});
+
+	it("merging is done deep with correct order", () => {
+		let bottom = {a: {b: 5, c: 6}};
+		let top = {a: {c: 9, d: 0}};
+		let expectedOptions = {a: {b: 5, c: 6, d: 0}};
+
+		expect(fetchOptions._mergeOptions(bottom, top)).toEqual(expectedOptions);
+	});
+
 	it("merge options doesn't mutate the arguments", () => {
 		let bottom = {a: 4, b: 5};
 		let top = {a: 7, c: 9};

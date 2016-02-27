@@ -53,7 +53,42 @@ function mergeOptions(bottom, top) {
 		return null;
 	}
 
-	return Object.assign({}, top, bottom);
+	if (bottom === null || top === null) {
+		return Object.assign({}, bottom || top);
+	}
+
+	let result = Object.assign({}, bottom);
+
+	for (let key of Object.keys(top)) {
+		let value = top[key];
+
+		if (bottom[key] === undefined) {
+			result[key] = value;
+		} else if (isObjLiteral(value) && isObjLiteral(bottom[key])) {
+			// deep merge
+			let newValue = mergeOptions(bottom[key], value);
+			result[key] = newValue;
+		}
+	}
+
+	return result;
+}
+
+function isObjLiteral(_obj) {
+	let _test = _obj;
+
+	if (typeof _obj !== 'object' || _obj === null) {
+		return false;
+	}
+
+	return (function() {
+		while (true) { // eslint-disable-line no-constant-condition
+			if (Object.getPrototypeOf(_test = Object.getPrototypeOf(_test)) === null) {
+				break;
+			}
+		}
+		return Object.getPrototypeOf(_obj) === _test;
+	})();
 }
 
 function fetchOptions(originalDir) {
