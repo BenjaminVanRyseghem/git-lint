@@ -6,13 +6,89 @@ const path = require("path");
 const log = require("verbalize");
 const argv = process.argv.slice()[2];
 
-function validateMessage(string) {
-	console.dir(string);
-	return 1;
+const fetchOptions = require("./lib/fetchOptions");
+const output = require("./lib/output");
+const context = require("./lib/context");
+const rules = require("./rules/rules");
+
+const noRulesErrorMessage = "No rules provided.";
+const noRuleFoundErrorMessage = "The rule {{rule}} was not found.";
+
+function isArray(object) {
+	return object.constructor === Array;
+}
+
+function applyRule(spec) {
+	let message = spec.message;
+	let rule = spec.rule;
+	let file = spec.file;
+	let fn = spec.fn;
+	let options = spec.options;
+	let output = spec.output;
+
+	let level;
+
+	if (isArray(options)) {
+		options = options.slice();
+		level = options.shift();
+	} else {
+		level = options;
+		options = null;
+	}
+
+	if (level === 0) {
+		return 0;
+	}
+
+	let newContext = context({
+		file: file,
+		output: output,
+		level: level,
+		options: options,
+		rule: rule
+	});
+
+	let checker = fn(newContext);
+	checker(message);
+
+	return newContext.hasErrors();
+}
+
+function validateMessage(string, options, file) {
+	let hasError = false;
+
+	if (!options.rules) {
+		output.error(noRulesErrorMessage);
+		return 1;
+	}
+
+	for (let rule of Object.keys(options.rules)) {
+		let ruleOptions = options.rules[rule];
+		let ruleFunction = rules[rule];
+
+		if (!ruleFunction) {
+			output.error(noRuleFoundErrorMessage, {
+				rule: rule
+			});
+			return 1;
+		}
+
+		let result = applyRule({
+			file: file,
+			message: string,
+			rule: rule,
+			fn: ruleFunction,
+			options: ruleOptions,
+			output: output
+		});
+
+		hasError = hasError || result;
+	}
+
+	return hasError ? 1 : 0;
 }
 
 function initialize() {
-	// console.log(`Current directory: ${process.cwd()}`);
 	parseArguments(argv);
 }
 
@@ -21,14 +97,16 @@ function displayHelp() {
 }
 
 function parseArguments(commitMessageTmpFile) {
-	if (!commitMessageTmpFile) {
+	if (!commitMessageTmpFile || !fs.existsSync(commitMessageTmpFile)) {
 		displayHelp();
 		process.exit(1);
 	}
 
-	console.dir(commitMessageTmpFile);
+	let dir = path.dirname(commitMessageTmpFile);
+	let options = fetchOptions(dir);
+	
 	let message = fs.readFileSync(commitMessageTmpFile, "utf8");
-	let result = validateMessage(message);
+	let result = validateMessage(message, options, path.resolve(commitMessageTmpFile));
 
 	process.exit(result);
 }
