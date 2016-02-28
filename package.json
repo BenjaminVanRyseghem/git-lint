@@ -2,11 +2,22 @@
   "name": "git-lint",
   "description": "A git commit message linter",
   "version": "0.1.0",
+  "year": "2016",
   "homepage": "https://github.com/BenjaminVanRyseghem/git-lint",
   "author": {
     "name": "Benjamin Van Ryseghem",
-    "url": "benjamin.vanryseghem.com"
+    "email": "benjamin.vanryseghem@gmail.com",
+    "url": "http://benjamin.vanryseghem.com"
   },
+  "contributors": [
+    {
+      "name": "Benjamin Van Ryseghem",
+      "email": "benjamin.vanryseghem@gmail.com",
+      "url": "https://benjamin.vanryseghem.com"
+    }
+  ],
+  "license": "GPL-3.0",
+  "licenseUrl": "http://www.gnu.org/licenses/gpl-3.0.en.html",
   "repository": {
     "type": "git",
     "url": "git://github.com/BenjaminVanRyseghem/git-lint.git"
@@ -38,7 +49,9 @@
     "test": "mocha -R test"
   },
   "dependencies": {
+    "command-line-args": "^2.1.6",
     "minimist": "~0.0.8",
+    "mustache": "^2.2.1",
     "verbalize": "~0.1.1"
   },
   "devDependencies": {

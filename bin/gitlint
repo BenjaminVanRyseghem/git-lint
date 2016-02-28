@@ -3,16 +3,15 @@
 
 const fs = require("fs");
 const path = require("path");
-const log = require("verbalize");
-const argv = process.argv.slice()[2];
 
 const fetchOptions = require("./lib/fetchOptions");
 const output = require("./lib/output");
+const cli = require("./lib/cli");
 const context = require("./lib/context");
 const rules = require("./rules/rules");
 
 const noRulesErrorMessage = "No rules provided.";
-const noRuleFoundErrorMessage = "The rule {{rule}} was not found.";
+const noRuleFoundErrorMessage = "The rule \"{{rule}}\" was not found.";
 
 function isArray(object) {
 	return object.constructor === Array;
@@ -24,6 +23,7 @@ function applyRule(spec) {
 	let file = spec.file;
 	let fn = spec.fn;
 	let options = spec.options;
+	let cliOptions = spec.cliOptions;
 	let output = spec.output;
 
 	let level;
@@ -43,18 +43,19 @@ function applyRule(spec) {
 	let newContext = context({
 		file: file,
 		output: output,
+		cliOptions: cliOptions,
 		level: level,
 		options: options,
 		rule: rule
 	});
 
-	let checker = fn(newContext);
-	checker(message);
+	// Apply the rule
+	fn(newContext)(message);
 
 	return newContext.hasErrors();
 }
 
-function validateMessage(string, options, file) {
+function validateMessage(string, options, cliOptions, file) {
 	let hasError = false;
 
 	if (!options.rules) {
@@ -75,6 +76,7 @@ function validateMessage(string, options, file) {
 
 		let result = applyRule({
 			file: file,
+			cliOptions: cliOptions,
 			message: string,
 			rule: rule,
 			fn: ruleFunction,
@@ -89,14 +91,11 @@ function validateMessage(string, options, file) {
 }
 
 function initialize() {
-	parseArguments(argv);
+	let args = cli.getArguments();
+	analyzeMessage(args.src, args);
 }
 
-function displayHelp() {
-	console.log("foo");
-}
-
-function parseArguments(commitMessageTmpFile) {
+function analyzeMessage(commitMessageTmpFile, cliOptions) {
 	if (!commitMessageTmpFile || !fs.existsSync(commitMessageTmpFile)) {
 		displayHelp();
 		process.exit(1);
@@ -106,7 +105,7 @@ function parseArguments(commitMessageTmpFile) {
 	let options = fetchOptions(dir);
 	
 	let message = fs.readFileSync(commitMessageTmpFile, "utf8");
-	let result = validateMessage(message, options, path.resolve(commitMessageTmpFile));
+	let result = validateMessage(message, options, cliOptions, path.resolve(commitMessageTmpFile));
 
 	process.exit(result);
 }

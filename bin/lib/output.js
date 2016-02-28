@@ -1,5 +1,6 @@
 "use strict";
 
+const mustache = require("mustache");
 // let reporter = unixReporter;
 
 function reportError(spec) {
@@ -27,19 +28,20 @@ function reportWarning(spec) {
 }
 
 function report(spec) {
-	if (spec.level === 2) {
-		reportError(spec);
-		return;
-	}
-
-	if (spec.level === 1) {
-		reportWarning(spec);
-		return;
+	switch (spec.level) {
+		case 2:
+			reportError(spec);
+			break;
+		case 1:
+			reportWarning(spec);
+			return;
+		default:
+			throw new Error(`Rule level should be among 0, 1, 2. ${spec.level} was found`);
 	}
 }
 
 function error(message, options) {
-	console.error(message);
+	console.error(mustache.render(message, options));
 }
 
 module.exports = {
