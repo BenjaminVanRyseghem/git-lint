@@ -1,7 +1,7 @@
 module.exports = function(context) {
 	"use strict";
 	const defaultOptions = {
-		length: 50
+		length: 72
 	};
 	let options = defaultOptions;
 
@@ -11,16 +11,20 @@ module.exports = function(context) {
 
 	return function(message) {
 		let lines = message.split("\n");
-		let firstLine = lines[0];
+		lines.shift(); // Drop first line
 
-		if (firstLine.length > options.length) {
-			context.report({
-				message: "Short description is too long.",
-				loc: {
-					line: 1,
-					column: options.length
-				}
-			});
+		let lineNumber = 1;
+		for (let line of lines) {
+			lineNumber++;
+			if (line.length > options.length) {
+				context.report({
+					message: "Long description is too long.",
+					loc: {
+						line: lineNumber,
+						column: options.length
+					}
+				});
+			}
 		}
 	};
 };

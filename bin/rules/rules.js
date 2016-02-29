@@ -2,6 +2,7 @@
 
 let rules = [
 	"short-description-length",
+	"long-description-length",
 	"empty-line"
 ];
 
