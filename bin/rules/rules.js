@@ -1,3 +1,12 @@
-module.exports = {
-	"short-description-length": require("./short-description-length/short-description-length")
-};
+"use strict";
+
+let rules = [
+	"short-description-length",
+	"empty-line"
+];
+
+module.exports = {};
+
+for (let rule of rules) {
+	module.exports[rule] = require(`./${rule}/${rule}`);
+}
