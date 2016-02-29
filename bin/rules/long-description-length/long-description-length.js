@@ -9,8 +9,7 @@ module.exports = function(context) {
 		options.length = context.options[0];
 	}
 
-	return function(message) {
-		let lines = message.split("\n");
+	return function(message, lines) {
 		lines.shift(); // Drop first line
 
 		let lineNumber = 1;

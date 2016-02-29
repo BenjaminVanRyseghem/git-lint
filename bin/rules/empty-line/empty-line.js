@@ -1,9 +1,7 @@
 module.exports = function(context) {
 	"use strict";
 
-	return function(message) {
-		let lines = message.split("\n");
-
+	return function(message, lines) {
 		if (lines.length < 2) {
 			return;
 		}

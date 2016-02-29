@@ -9,8 +9,7 @@ module.exports = function(context) {
 		options.length = context.options[0];
 	}
 
-	return function(message) {
-		let lines = message.split("\n");
+	return function(message, lines) {
 		let firstLine = lines[0];
 
 		if (firstLine.length > options.length) {

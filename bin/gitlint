@@ -55,7 +55,17 @@ function applyRule(spec) {
 	});
 
 	// Apply the rule
-	fn(newContext)(message);
+	let allLines = message.split("\n");
+
+	let lines = allLines.filter((line) => {
+		return line[0] !== "#";
+	});
+	
+	let comments = allLines.filter((line) => {
+		return line[0] === "#";
+	});
+
+	fn(newContext)(message, lines, comments);
 
 	return newContext.hasErrors();
 }
