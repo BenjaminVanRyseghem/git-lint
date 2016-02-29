@@ -5,10 +5,8 @@ module.exports = function(context) {
 	};
 	let options = defaultOptions;
 
-	if (context.options && context.options.length) {
-		if (context.options[0].length) {
-			options.length = context.options[0].length;
-		}
+	if (context.options && context.options.length && context.options[0]) {
+		options.length = context.options[0];
 	}
 
 	return function(message) {
@@ -29,12 +27,6 @@ module.exports = function(context) {
 
 module.exports.schema = [
 	{
-		"type": "object",
-		"properties": {
-			"length": {
-				"type": "integer"
-			}
-		},
-		"additionalProperties": false
+		"type": "integer"
 	}
 ];

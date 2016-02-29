@@ -8,6 +8,7 @@ const fetchOptions = require("./lib/fetchOptions");
 const output = require("./lib/output");
 const cli = require("./lib/cli");
 const context = require("./lib/context");
+const schemaValidator = require("./lib/schemaValidator");
 const rules = require("./rules/rules");
 
 const noRulesErrorMessage = "No rules provided.";
@@ -92,7 +93,7 @@ function validateMessage(string, options, cliOptions, file) {
 		return 1;
 	}
 
-	for (let rule of Object.keys(options.rules)) {
+	for (let rule of Object.keys(options.rules).sort()) {
 		let ruleOptions = options.rules[rule];
 		let ruleFunction = rules[rule];
 
@@ -101,16 +102,25 @@ function validateMessage(string, options, cliOptions, file) {
 		}
 
 		let result = true;
+
 		if (ruleFunction) {
-			result = applyRule({
-				file: file,
-				cliOptions: cliOptions,
-				message: string,
-				rule: rule,
-				fn: ruleFunction,
-				options: ruleOptions,
-				output: output
-			});
+			let isSchemaValid = true;
+
+			if (isArray(ruleOptions)) {
+				isSchemaValid = schemaValidator(rule, ruleFunction.schema, ruleOptions);
+			}
+
+			if (isSchemaValid) {
+				result = applyRule({
+					file: file,
+					cliOptions: cliOptions,
+					message: string,
+					rule: rule,
+					fn: ruleFunction,
+					options: ruleOptions,
+					output: output
+				});
+			}
 		}
 
 		hasError = hasError || result;
