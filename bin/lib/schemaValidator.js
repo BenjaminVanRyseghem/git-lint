@@ -3,7 +3,7 @@
 const output = require("./output");
 const validator = require('is-my-json-valid');
 
-const schemaLengthMismatch = "The schema allow {{{schema}}} options but {{{options}}} were provided.";
+const schemaLengthMismatch = "{{{rule}}}: the schema allow {{{schema}}} options but {{{options}}} were provided.";
 const failValidation = "Fail to validate the options against the schema of \"{{{rule}}}\":";
 const failError = "\t- \"{{{field}}}\" {{{message}}};";
 
@@ -37,6 +37,7 @@ function schemaValidator(rule, schemas, options) {
 
 	if (ruleOptions.length !== schemas.length) {
 		output.error(schemaLengthMismatch, {
+			rule: rule,
 			schema: schemas.length,
 			options: ruleOptions.length
 		});
