@@ -3,6 +3,7 @@ function context(spec) {
 
 	var that = {};
 	that.options = spec.options;
+	that.git = spec.git;
 
 	let output = spec.output;
 	let level = spec.level;

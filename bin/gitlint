@@ -10,6 +10,7 @@ const cli = require("./lib/cli");
 const context = require("./lib/context");
 const schemaValidator = require("./lib/schemaValidator");
 const rules = require("./rules/rules");
+const Git = require("nodegit");
 
 const noRulesErrorMessage = "No rules provided.";
 const noRuleFoundErrorMessage = "The rule \"{{{rule}}}\" was not found.";
@@ -27,6 +28,7 @@ function applyRule(spec) {
 	let options = spec.options;
 	let cliOptions = spec.cliOptions;
 	let output = spec.output;
+	let gitContext = spec.gitContext;
 
 	let level;
 
@@ -48,7 +50,8 @@ function applyRule(spec) {
 		cliOptions: cliOptions,
 		level: level,
 		options: options,
-		rule: rule
+		rule: rule,
+		git: gitContext
 	});
 
 	// Apply the rule
@@ -85,7 +88,7 @@ function findExtraRule(name, options) {
 	return fn;
 }
 
-function validateMessage(string, options, cliOptions, file) {
+function validateMessage(string, options, cliOptions, gitContext, file) {
 	let hasError = false;
 
 	if (!options.rules) {
@@ -118,6 +121,7 @@ function validateMessage(string, options, cliOptions, file) {
 					rule: rule,
 					fn: ruleFunction,
 					options: ruleOptions,
+					gitContext: gitContext,
 					output: output
 				});
 			}
@@ -131,10 +135,36 @@ function validateMessage(string, options, cliOptions, file) {
 
 function initialize() {
 	let args = cli.getArguments();
-	analyzeMessage(args.src, args);
+
+	if (args["no-git-context"]) {
+		analyzeMessage(args.src, args, {});
+		return;
+	}
+
+	let gitContext = {};
+
+	Git.Repository.open(".").then(function(repo) {
+		gitContext.repository = repo;
+		return repo.getCurrentBranch();
+	}).then(function(branch) {
+		gitContext.branch = branch;
+		return gitContext.repository.getHeadCommit();
+	}).then(function(commit) {
+		return commit.getTree();
+	}).then(function(tree) {
+		return Git.Diff.treeToIndex(gitContext.repository, tree, "HEAD");
+	}).then(function(diff) {
+		return diff.patches();
+	}).then(function(arrayConvenientPatch) {
+		gitContext.patches = arrayConvenientPatch;
+		analyzeMessage(args.src, args, gitContext);
+	}).catch(function(reasonForFailure) {
+		output.error(reasonForFailure.message);
+		process.exit(1);
+	});
 }
 
-function analyzeMessage(commitMessageTmpFile, cliOptions) {
+function analyzeMessage(commitMessageTmpFile, cliOptions, gitContext) {
 	if (!commitMessageTmpFile || !fs.existsSync(commitMessageTmpFile)) {
 		cli.displayHelp();
 		process.exit(1);
@@ -142,9 +172,9 @@ function analyzeMessage(commitMessageTmpFile, cliOptions) {
 
 	let dir = path.dirname(commitMessageTmpFile);
 	let options = fetchOptions(dir);
-	
+
 	let message = fs.readFileSync(commitMessageTmpFile, "utf8");
-	let result = validateMessage(message, options, cliOptions, path.resolve(commitMessageTmpFile));
+	let result = validateMessage(message, options, cliOptions, gitContext, path.resolve(commitMessageTmpFile));
 
 	process.exit(result);
 }
