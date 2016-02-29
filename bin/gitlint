@@ -11,7 +11,8 @@ const context = require("./lib/context");
 const rules = require("./rules/rules");
 
 const noRulesErrorMessage = "No rules provided.";
-const noRuleFoundErrorMessage = "The rule \"{{rule}}\" was not found.";
+const noRuleFoundErrorMessage = "The rule \"{{{rule}}}\" was not found.";
+const failedToLoadErrorMessage = "The rule \"{{{rule}}}\" could not be loaded from \"{{{path}}}\".";
 
 function isArray(object) {
 	return object.constructor === Array;
@@ -55,6 +56,34 @@ function applyRule(spec) {
 	return newContext.hasErrors();
 }
 
+function findExtraRule(name, options) {
+	let rulesDir = options.rulesdir;
+
+	if (!rulesDir) {
+		output.error(noRuleFoundErrorMessage, {
+			rule: name
+		});
+
+		return null;
+	}
+
+	let fn;
+	let rulePath = path.resolve(rulesDir, name);
+
+	try {
+		fn = require(rulePath);
+	} catch (e) {
+		output.error(failedToLoadErrorMessage, {
+			rule: name,
+			path: rulePath.toString()
+		});
+
+		return null;
+	}
+
+	return fn;
+}
+
 function validateMessage(string, options, cliOptions, file) {
 	let hasError = false;
 
@@ -68,21 +97,21 @@ function validateMessage(string, options, cliOptions, file) {
 		let ruleFunction = rules[rule];
 
 		if (!ruleFunction) {
-			output.error(noRuleFoundErrorMessage, {
-				rule: rule
-			});
-			return 1;
+			ruleFunction = findExtraRule(rule, options);
 		}
 
-		let result = applyRule({
-			file: file,
-			cliOptions: cliOptions,
-			message: string,
-			rule: rule,
-			fn: ruleFunction,
-			options: ruleOptions,
-			output: output
-		});
+		let result = true;
+		if (ruleFunction) {
+			result = applyRule({
+				file: file,
+				cliOptions: cliOptions,
+				message: string,
+				rule: rule,
+				fn: ruleFunction,
+				options: ruleOptions,
+				output: output
+			});
+		}
 
 		hasError = hasError || result;
 	}
@@ -97,7 +126,7 @@ function initialize() {
 
 function analyzeMessage(commitMessageTmpFile, cliOptions) {
 	if (!commitMessageTmpFile || !fs.existsSync(commitMessageTmpFile)) {
-		displayHelp();
+		cli.displayHelp();
 		process.exit(1);
 	}
 
