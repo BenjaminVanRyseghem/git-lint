@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "command-line-args": "^2.1.6",
+    "git-lint-recommended": "benjaminvanryseghem/git-lint-recommended",
     "is-my-json-valid": "^2.13.1",
     "minimist": "~0.0.8",
     "mustache": "^2.2.1",

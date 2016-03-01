@@ -9,12 +9,13 @@ const output = require("./lib/output");
 const cli = require("./lib/cli");
 const context = require("./lib/context");
 const schemaValidator = require("./lib/schemaValidator");
-const rules = require("./rules/rules");
+const defaultRules = require("./rules/rules");
 const Git = require("nodegit");
 
 const noRulesErrorMessage = "No rules provided.";
 const noRuleFoundErrorMessage = "The rule \"{{{rule}}}\" was not found.";
 const failedToLoadErrorMessage = "The rule \"{{{rule}}}\" could not be loaded from \"{{{path}}}\".";
+const pluginsConflict = "The plugin rule \"{{{rule}}}\" is already defined";
 
 function isArray(object) {
 	return object.constructor === Array;
@@ -60,7 +61,7 @@ function applyRule(spec) {
 	let lines = allLines.filter((line) => {
 		return line[0] !== "#";
 	});
-	
+
 	let comments = allLines.filter((line) => {
 		return line[0] === "#";
 	});
@@ -98,17 +99,73 @@ function findExtraRule(name, options) {
 	return fn;
 }
 
+// Todo: Extract in a separate module
+function loadPluginRules(options) {
+	if (!options.plugins || !options.plugins.length) {
+		return {};
+	}
+
+	let result = {
+		config: {},
+		rules: {}
+	};
+
+	for (let name of options.plugins) {
+		// Plugin name should match a npm package name
+		let rules = {};
+		try {
+			rules = require(name);
+		} catch (error) {
+			output.error(error.message);
+			process.exit(1);
+		}
+
+		if (rules.config) {
+			for (let name of Object.keys(rules.config)) {
+				let opt = rules.config[name];
+				if (result.config[name]) {
+					output.error(pluginsConflict, {
+						rule: name
+					})
+				} else {
+					result.config[name] = opt;
+				}
+			}
+		}
+
+		if (rules.rules) {
+			for (let name of Object.keys(rules.rules)) {
+				let opt = rules.rules[name];
+				if (result.rules[name]) {
+					output.error(pluginsConflict, {
+						rule: name
+					})
+				} else {
+					result.rules[name] = opt;
+				}
+			}
+		}
+	}
+
+	return result;
+}
+
 function validateMessage(string, options, cliOptions, gitContext, file) {
 	let hasError = false;
 
-	if (!options.rules) {
+	let pluginRules = loadPluginRules(options);
+
+	let rules = Object.assign({}, pluginRules.config, options.rules);
+	let rulesFunctions = Object.assign({}, pluginRules.rules, defaultRules);
+
+	if (!rules) {
 		output.error(noRulesErrorMessage);
 		return 1;
 	}
 
-	for (let rule of Object.keys(options.rules).sort()) {
-		let ruleOptions = options.rules[rule];
-		let ruleFunction = rules[rule];
+	for (let rule of Object.keys(rules).sort()) {
+		let ruleOptions = rules[rule];
+		let ruleFunction = rulesFunctions[rule];
 
 		if (!ruleFunction) {
 			ruleFunction = findExtraRule(rule, options);
