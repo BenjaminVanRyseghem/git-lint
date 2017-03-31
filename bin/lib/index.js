@@ -7,6 +7,7 @@ const fetchOptions = require("./fetchOptions");
 const loadPlugins = require("./loadPlugins");
 const output = require("./output");
 const cli = require("./cli");
+const readStdin = require("./readStdin");
 const gitlint = require("../../lib/gitlint");
 const Git = require("nodegit");
 
@@ -74,18 +75,31 @@ function main() {
 }
 
 function analyzeMessage(commitMessageTmpFile, cliOptions, gitContext) {
+	let message = "";
+	let dir;
+	let file;
+
 	if (!commitMessageTmpFile || !fs.existsSync(commitMessageTmpFile)) {
-		cli.displayHelp();
-		process.exit(1);
+		// Trying stdin
+		message = readStdin();
+		dir = process.cwd();
+		file = "stdin";
+
+		if (!message) {
+			cli.displayHelp();
+			process.exit(1);
+		}
+	} else {
+		dir = path.dirname(commitMessageTmpFile);
+		message = fs.readFileSync(commitMessageTmpFile, "utf8");
+		file = path.resolve(commitMessageTmpFile);
 	}
 
-	let dir = path.dirname(commitMessageTmpFile);
 	let options = fetchOptions(dir);
 
-	let message = fs.readFileSync(commitMessageTmpFile, "utf8");
 	let extraContext = {
 		git: gitContext,
-		file: path.resolve(commitMessageTmpFile),
+		file: file,
 		cliOptions
 	};
 
