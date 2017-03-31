@@ -41,7 +41,7 @@
   "bin": {
     "gitlint": "./bin/gitlint"
   },
-  "main": "index.js",
+  "main": "lib/gitlint.js",
   "engines": {
     "node": ">=0.8"
   },
