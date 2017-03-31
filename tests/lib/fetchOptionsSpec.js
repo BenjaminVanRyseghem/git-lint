@@ -7,7 +7,7 @@ describe("fetchOptions", function() {
 	it("can read JSON options", () => {
 		let fs = require("fs");
 		let expectedOptions = {foo: 4};
-		let path = "foo/bar"
+		let path = "foo/bar";
 
 		spyOn(fs, "readFileSync").and.returnValue(JSON.stringify(expectedOptions));
 		expect(fetchOptions._readJsonOptions(path)).toEqual(expectedOptions);

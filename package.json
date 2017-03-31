@@ -46,7 +46,7 @@
     "node": ">=0.8"
   },
   "scripts": {
-    "test": "mocha -R test"
+    "test": "gulp tests"
   },
   "dependencies": {
     "command-line-args": "^2.1.6",
@@ -54,7 +54,7 @@
     "is-my-json-valid": "^2.13.1",
     "minimist": "~0.0.8",
     "mustache": "^2.2.1",
-    "nodegit": "^0.11.5",
+    "nodegit": "^0.18.0",
     "verbalize": "~0.1.1"
   },
   "devDependencies": {
