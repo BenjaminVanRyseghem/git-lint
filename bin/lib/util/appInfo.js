@@ -2,7 +2,7 @@
 
 const fs = require("fs");
 
-let string = fs.readFileSync(`${__dirname}/../../package.json`);
+let string = fs.readFileSync(`${__dirname}/../../../package.json`);
 let packageInfo = JSON.parse(string);
 
 packageInfo.longCopyright = `Copyright © ${packageInfo.year} ${packageInfo.author.name}`;

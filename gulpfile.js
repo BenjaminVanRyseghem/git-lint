@@ -49,9 +49,8 @@ gulp.task("tests", ["pre-test"], () => {
 });
 
 gulp.task("jasmine", () => {
-	return gulp.src(all)
-		.pipe(plugins.jasmineBrowser.specRunner())
-		.pipe(plugins.jasmineBrowser.server({port: 8888}));
+	return gulp.src(tests)
+		.pipe(plugins.jasmine());
 });
 
 // Coverage

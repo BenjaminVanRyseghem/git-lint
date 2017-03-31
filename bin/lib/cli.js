@@ -1,8 +1,7 @@
 "use strict";
 
 const commandLineArgs = require('command-line-args');
-const info = require("./appInfo");
-const output = require("./output");
+const info = require("./util/appInfo");
 
 const cli = commandLineArgs([
 	{
@@ -57,7 +56,7 @@ function getArguments() {
 	try {
 		options = cli.parse();
 	} catch (e) {
-		output.error(e.message);
+		console.error(e.message);
 		displayHelp();
 		process.exit(1);
 	}

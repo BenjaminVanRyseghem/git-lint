@@ -1,8 +1,6 @@
 "use strict";
 
-const mustache = require("mustache");
-// let reporter = unixReporter;
-
+// Todo: implement reporters
 function reportError(spec) {
 	let level = spec.level;
 	let file = spec.file;
@@ -27,24 +25,23 @@ function reportWarning(spec) {
 	console.warn(`${file}:${errorOptions.loc.line}:${errorOptions.loc.column}: ${message} [Warning/${rule}]`);
 }
 
-function report(spec) {
-	switch (spec.level) {
+function report({level}) {
+	switch (level) {
 		case 2:
-			reportError(spec);
+			reportError(...arguments);
 			break;
 		case 1:
-			reportWarning(spec);
+			reportWarning(...arguments);
 			return;
+		case 0:
+			break;
 		default:
-			throw new Error(`Rule level should be among 0, 1, 2. ${spec.level} was found`);
+			throw new Error(`Rule level should be among 0, 1, 2. ${level} was found`);
 	}
 }
 
-function error(message, options) {
-	console.error(mustache.render(message, options));
+function reportResult(lintResult) {
+	lintResult.getData().forEach(report);
 }
 
-module.exports = {
-	error: error,
-	report: report
-};
+module.exports = reportResult;
