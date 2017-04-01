@@ -1,5 +1,3 @@
-"use strict";
-
 const fs = require("fs");
 const path = require("path");
 
@@ -77,7 +75,7 @@ function mergeOptions(bottom, top) {
 function isObjLiteral(_obj) {
 	let _test = _obj;
 
-	if (typeof _obj !== 'object' || _obj === null) {
+	if (typeof _obj !== "object" || _obj === null) {
 		return false;
 	}
 

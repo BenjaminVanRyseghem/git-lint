@@ -1,5 +1,3 @@
-"use strict";
-
 const output = require("./output");
 const pluginsConflict = "The plugin rule \"{{{rule}}}\" is already defined";
 
@@ -29,7 +27,7 @@ module.exports = function(options) {
 				if (result.config[name]) {
 					output.error(pluginsConflict, {
 						rule: name
-					})
+					});
 				} else {
 					result.config[name] = opt;
 				}
@@ -42,7 +40,7 @@ module.exports = function(options) {
 				if (result.rules[name]) {
 					output.error(pluginsConflict, {
 						rule: name
-					})
+					});
 				} else {
 					result.rules[name] = opt;
 				}

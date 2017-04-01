@@ -1,5 +1,3 @@
-"use strict";
-
 const fs = require("fs");
 
 let string = fs.readFileSync(`${__dirname}/../../../package.json`);

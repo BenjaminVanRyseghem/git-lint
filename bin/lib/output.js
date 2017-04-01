@@ -1,28 +1,22 @@
-"use strict";
-
 // Todo: implement reporters
 function reportError(spec) {
-	let level = spec.level;
 	let file = spec.file;
 	let rule = spec.rule;
 	let errorOptions = spec.errorOptions;
-	let contextOptions = spec.options;
 
 	let message = errorOptions.message;
 
-	console.error(`${file}:${errorOptions.loc.line}:${errorOptions.loc.column}: ${message} [Error/${rule}]`);
+	console.error(`${file}:${errorOptions.loc.line}:${errorOptions.loc.column}: ${message} [Error/${rule}]`); // eslint-disable-line no-console
 }
 
 function reportWarning(spec) {
-	let level = spec.level;
 	let file = spec.file;
 	let rule = spec.rule;
 	let errorOptions = spec.errorOptions;
-	let contextOptions = spec.options;
 
 	let message = errorOptions.message;
 
-	console.warn(`${file}:${errorOptions.loc.line}:${errorOptions.loc.column}: ${message} [Warning/${rule}]`);
+	console.warn(`${file}:${errorOptions.loc.line}:${errorOptions.loc.column}: ${message} [Warning/${rule}]`); // eslint-disable-line no-console
 }
 
 function report({level}) {

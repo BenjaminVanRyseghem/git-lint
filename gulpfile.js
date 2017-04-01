@@ -1,32 +1,32 @@
-"use strict";
-
 let gulp = require("gulp");
 let reporters = require("jasmine-reporters");
 let del = require("del");
-
-let packageInfo = require("./package.json");
 
 let plugins = require("gulp-load-plugins")({
 	rename: {
 		"gulp-eslint": "eslint",
 		"gulp-jasmine": "jasmine",
+		"gulp-flatmap": "flatmap",
 		"gulp-istanbul": "istanbul",
 		"gulp-codacy": "codacy",
 		"grunt-strip-code": "stripCode"
 	}
 });
 
-let sources = ["./bin/gitlint", "./bin/**/*.js"];
-let tests = ["./tests/**/*.js"];
-let all = sources.slice().concat(tests);
+let sources = ["./bin/gitlint", "./bin/**/*.js", "./lib/**/*.js"];
+let tests = ["./tests/**/*Spec.js"];
+let misc = ["./gulpfile.js", "./.eslintrc.js"];
+let all = sources.slice().concat(tests).concat(misc);
 
 gulp.task("default", ["lint", "tests"]);
 
 gulp.task("js-lint", () => {
-	return gulp.src(all)
+	var pipeline = gulp.src(all)
 		.pipe(plugins.eslint())
-		.pipe(plugins.eslint.format())
+		.pipe(plugins.eslint.format("unix"))
 		.pipe(plugins.eslint.failAfterError());
+
+	return pipeline;
 });
 
 gulp.task("lint", ["js-lint"]);
@@ -53,47 +53,17 @@ gulp.task("jasmine", () => {
 		.pipe(plugins.jasmine());
 });
 
-// Coverage
-
-gulp.task("basic-coverage", () => {
-	return gulp.src("").pipe(plugins.shell("istanbul cover ./node_modules/.bin/jasmine --captureExceptions")
-	);
-});
-
-gulp.task("coveralls", ["basic-coverage"], () => {
-	return gulp.src("").pipe(plugins.shell("cat <%= info %> | <%= coveralls %>", {
-			templateData: {
-				info: "./coverage/lcov.info",
-				coveralls: "./node_modules/coveralls/bin/coveralls.js"
-			}
-		})
-	);
-});
-
-// gulp.task("codacy", ["basic-coverage"], () => {
-// 	return gulp
-// 		.src(["./coverage/lcov.info"], {read: false})
-// 		.pipe(plugins.codacy({
-// 			token: process.env.CODACY_TOKEN
-// 		}));
-// });
-
-// gulp.task("coverage", ["coveralls", "codacy"], () => {
-gulp.task("coverage", ["coveralls"], () => {
-	return gulp.src("").pipe(plugins.shell("rm -rf ./coverage"));
-});
-
 //
 // Deploy
 //
 
-gulp.task('build', function() {
+gulp.task("build", function() {
 	gulp.src(sources)
 		.pipe(plugins.stripCode({
 			start_comment: "start-test",
 			end_comment: "end-test"
 		}))
-		.pipe(gulp.dest('build'));
+		.pipe(gulp.dest("build"));
 });
 
 //

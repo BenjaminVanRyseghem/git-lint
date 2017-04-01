@@ -1,7 +1,7 @@
 require("../helpers/spyOnModule");
 const gitlint = require("../../lib/gitlint");
 
-fdescribe("gitlint", () => {
+describe("gitlint", () => {
 
 	it("calls `lint` for each rule", () => {
 		let message = "Short enough description";
@@ -11,7 +11,7 @@ fdescribe("gitlint", () => {
 			}
 		};
 		let numberOfRules = Object.keys(options.rules).length;
-		let lint = spyOnModule("../../lib/messageLinter");
+		let lint = global.spyOnModule("../../lib/messageLinter");
 
 		gitlint(message, options);
 
@@ -33,8 +33,8 @@ fdescribe("gitlint", () => {
 					let errored = result.isErrored();
 
 					expect(errored).toBeFalsy();
-				})
-			})
-		})
+				});
+			});
+		});
 	});
 });

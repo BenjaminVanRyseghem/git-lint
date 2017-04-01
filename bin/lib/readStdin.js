@@ -6,7 +6,8 @@ function read() {
 	let bytesRead;
 	let result = "";
 
-	while (true) { // Loop as long as stdin input is available.
+	// Loop as long as stdin input is available.
+	while (true) { // eslint-disable-line no-constant-condition
 		bytesRead = 0;
 		try {
 			bytesRead = fs.readSync(process.stdin.fd, buf, 0, BUFSIZE);

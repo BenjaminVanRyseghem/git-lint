@@ -1,6 +1,4 @@
-"use strict";
-
-const commandLineArgs = require('command-line-args');
+const commandLineArgs = require("command-line-args");
 const info = require("./util/appInfo");
 
 const cli = commandLineArgs([
@@ -11,25 +9,25 @@ const cli = commandLineArgs([
 		description: "Display this text"
 	},
 	{
-		name: 'verbose',
-		alias: 'V',
+		name: "verbose",
+		alias: "V",
 		type: Boolean,
 		description: "Output more information"
 	},
 	{
-		name: 'version',
-		alias: 'v',
+		name: "version",
+		alias: "v",
 		type: Boolean,
 		description: "Display the version text"
 	},
 	{
-		name: 'src',
+		name: "src",
 		type: String,
 		defaultOption: true,
 		description: "Message to lint"
 	},
 	{
-		name: 'no-git-context',
+		name: "no-git-context",
 		type: Boolean,
 		description: "Deactivate the git context"
 	}
@@ -44,11 +42,11 @@ const usageOptions = {
 };
 
 function displayHelp() {
-	console.log(cli.getUsage(usageOptions));
+	console.log(cli.getUsage(usageOptions)); // eslint-disable-line no-console
 }
 
 function displayVersion() {
-	console.log(info.longVersion);
+	console.log(info.longVersion); // eslint-disable-line no-console
 }
 
 function getArguments() {
@@ -56,7 +54,7 @@ function getArguments() {
 	try {
 		options = cli.parse();
 	} catch (e) {
-		console.error(e.message);
+		console.error(e.message); // eslint-disable-line no-console
 		displayHelp();
 		process.exit(1);
 	}

@@ -1,6 +1,4 @@
 describe("fetchOptions", function() {
-	"use strict";
-
 	const fetchOptions = require("../../bin/lib/fetchOptions");
 	const isWindows = process.platform === "win32" || process.platform === "win64";
 
@@ -16,7 +14,7 @@ describe("fetchOptions", function() {
 
 	it("can read js options", () => {
 		let expectedOptions = {foo: 4};
-		let path = "../../tests/fixtures/lib/fetchOptions/.gitlintrc"
+		let path = "../../tests/fixtures/lib/fetchOptions/.gitlintrc";
 
 		expect(fetchOptions._readJSOptions(path)).toEqual(expectedOptions);
 	});
@@ -30,7 +28,7 @@ describe("fetchOptions", function() {
 
 		expect(fetchOptions._findLocalOption(path)).toEqual(expectedOptions);
 		expect(fs.existsSync.calls.count()).toEqual(1);
-		expect(fs.existsSync).toHaveBeenCalledWith(jasmine.stringMatching('.gitlintrc.js'));
+		expect(fs.existsSync).toHaveBeenCalledWith(jasmine.stringMatching(".gitlintrc.js"));
 	});
 
 	it("json is used for local options if no js", () => {
@@ -43,13 +41,12 @@ describe("fetchOptions", function() {
 
 		expect(fetchOptions._findLocalOption(path)).toEqual(expectedOptions);
 		expect(fs.existsSync.calls.count()).toEqual(2);
-		expect(fs.existsSync).toHaveBeenCalledWith(jasmine.stringMatching('.gitlintrc.json'));
+		expect(fs.existsSync).toHaveBeenCalledWith(jasmine.stringMatching(".gitlintrc.json"));
 	});
 
 	it("return null when no local file found", () => {
 		let fs = require("fs");
 		let path = "tests/fixtures/lib/fetchOptions";
-		let expectedOptions = {foo: 4};
 
 		spyOn(fs, "existsSync").and.returnValues(false, false);
 
@@ -125,7 +122,7 @@ describe("fetchOptions", function() {
 
 		spyOn(fs, "existsSync").and.returnValues(false);
 
-		fetchOptions("/foo/bar");
+		fetchOptions(path);
 
 		expect(fs.existsSync).toHaveBeenCalledWith("/foo/bar/.gitlintrc.js");
 		expect(fs.existsSync).toHaveBeenCalledWith("/foo/bar/.gitlintrc.json");
@@ -144,7 +141,7 @@ describe("fetchOptions", function() {
 		spyOn(fs, "existsSync").and.returnValues(false, true);
 		spyOn(fs, "readFileSync").and.returnValue(JSON.stringify(expectedOptions));
 
-		fetchOptions("/foo/bar");
+		fetchOptions(path);
 
 		expect(fs.existsSync).toHaveBeenCalledWith("/foo/bar/.gitlintrc.js");
 		expect(fs.existsSync).toHaveBeenCalledWith("/foo/bar/.gitlintrc.json");
@@ -162,7 +159,7 @@ describe("fetchOptions", function() {
 		spyOn(fs, "existsSync").and.returnValues(false, true, false, true);
 		spyOn(fs, "readFileSync").and.returnValues(JSON.stringify(bottom), JSON.stringify(top));
 
-		expect(fetchOptions("/foo/bar")).toEqual(expectedOptions);
+		expect(fetchOptions(path)).toEqual(expectedOptions);
 	});
 
 	describe("Windows specific tests", () => {

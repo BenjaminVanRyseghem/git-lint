@@ -1,6 +1,6 @@
 const schemaValidator = require("../../lib/schemaValidator");
 
-fdescribe("schemaValidator", () => {
+describe("schemaValidator", () => {
 	it("records schema error when mismatch between parameter numbers and number of options provided", () => {
 		let ruleName = jasmine.createSpy();
 		let schema = [
@@ -41,7 +41,7 @@ fdescribe("schemaValidator", () => {
 		let ruleName = jasmine.createSpy();
 		let schema = [
 			{"type": "integer"},
-			{"type": "string"},
+			{"type": "string"}
 		];
 		let ruleOptions = [45, "foo", 2];
 		let lintResult = jasmine.createSpyObj("lintResult", ["schemaError"]);
@@ -70,5 +70,5 @@ fdescribe("schemaValidator", () => {
 		});
 
 		expect(lintResult.schemaError).toHaveBeenCalled();
-	})
+	});
 });
