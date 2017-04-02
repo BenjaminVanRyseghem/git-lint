@@ -1,5 +1,5 @@
 describe("fetchOptions", function() {
-	const fetchOptions = require("../../bin/lib/fetchOptions");
+	const fetchOptions = require("../../../bin/lib/fetchOptions");
 	const isWindows = process.platform === "win32" || process.platform === "win64";
 
 	it("can read JSON options", () => {
@@ -162,6 +162,18 @@ describe("fetchOptions", function() {
 		expect(fetchOptions(path)).toEqual(expectedOptions);
 	});
 
+	describe("isObjLiteral", function() {
+		it("returns true for literal object", function() {
+			let object = {};
+			expect(fetchOptions._isObjLiteral(object)).toBeTruthy();
+		});
+
+		it("returns false for subclasses", function() {
+			let object = Object.create({});
+			expect(fetchOptions._isObjLiteral(object)).toBeFalsy();
+		});
+	});
+
 	describe("Windows specific tests", () => {
 		if (!isWindows) {
 			pending("The host is not a Windows machine");
@@ -207,6 +219,58 @@ describe("fetchOptions", function() {
 			let path = "/";
 
 			expect(fetchOptions._parentDirectory(path)).toBe(null);
+		});
+	});
+
+	describe("Platform specific tests", function() {
+		describe("on Windows", function() {
+			let originalPlatform;
+
+			beforeAll(function() {
+				originalPlatform = process.platform;
+				Object.defineProperty(process, "platform", {
+					value: "win32"
+				});
+			});
+
+			afterAll(function() {
+				Object.defineProperty(process, "platform", {
+					value: originalPlatform
+				});
+			});
+
+			it("isWindows on Windows", function() {
+				expect(fetchOptions._isWindows()).toBeTruthy();
+			});
+
+			it("getHomeEnvVarName on Windows", function() {
+				expect(fetchOptions._getHomeEnvVarName()).toBe("USERPROFILE");
+			});
+		});
+
+		describe("on Unix", function() {
+			let originalPlatform;
+
+			beforeAll(function() {
+				originalPlatform = process.platform;
+				Object.defineProperty(process, "platform", {
+					value: "unix"
+				});
+			});
+
+			afterAll(function() {
+				Object.defineProperty(process, "platform", {
+					value: originalPlatform
+				});
+			});
+
+			it("isWindows on Unix", function() {
+				expect(fetchOptions._isWindows()).toBeFalsy();
+			});
+
+			it("getHomeEnvVarName on Unix", function() {
+				expect(fetchOptions._getHomeEnvVarName()).toBe("HOME");
+			});
 		});
 	});
 });

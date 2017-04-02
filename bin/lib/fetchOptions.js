@@ -33,11 +33,16 @@ function parentDirectory(dir) {
 	return dir === parent ? null : parent;
 }
 
-function homeDir() {
-	let isWindows = process.platform === "win32" || process.platform === "win64";
-	let envVarName = isWindows ? "USERPROFILE" : "HOME";
+function isWindows() {
+	return process.platform === "win32" || process.platform === "win64";
+}
 
-	return process.env[envVarName];
+function getHomeEnvVarName() {
+	return isWindows() ? "USERPROFILE" : "HOME";
+}
+
+function homeDir() {
+	return process.env[getHomeEnvVarName()];
 }
 
 /**
@@ -64,8 +69,7 @@ function mergeOptions(bottom, top) {
 			result[key] = value;
 		} else if (isObjLiteral(value) && isObjLiteral(bottom[key])) {
 			// deep merge
-			let newValue = mergeOptions(bottom[key], value);
-			result[key] = newValue;
+			result[key] = mergeOptions(bottom[key], value);
 		}
 	}
 
@@ -113,4 +117,7 @@ module.exports._findLocalOption = findLocalOption;
 module.exports._parentDirectory = parentDirectory;
 module.exports._homeDir = homeDir;
 module.exports._mergeOptions = mergeOptions;
+module.exports._isObjLiteral = isObjLiteral;
+module.exports._getHomeEnvVarName = getHomeEnvVarName;
+module.exports._isWindows = isWindows;
 /* end-test */

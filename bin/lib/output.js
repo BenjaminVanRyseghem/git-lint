@@ -34,7 +34,15 @@ function report({level}) {
 	}
 }
 
+function reportSchemaError(ruleName, message) {
+	console.error(`The rule "${ruleName}" arguments are not matching the rule schema: ${message}`); // eslint-disable-line no-console
+}
+
 function reportResult(lintResult) {
+	lintResult.getSchemaErrors().forEach((message, ruleName) => {
+		reportSchemaError(ruleName, message);
+	});
+
 	lintResult.getData().forEach(report);
 }
 
