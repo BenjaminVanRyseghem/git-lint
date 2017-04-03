@@ -1,5 +1,6 @@
 const commandLineArgs = require("command-line-args");
-const info = require("./util/appInfo");
+
+const pathToPackageJson = `${__dirname}/../../../package.json`;
 
 const cli = commandLineArgs([
 	{
@@ -33,19 +34,22 @@ const cli = commandLineArgs([
 	}
 ]);
 
-const usageOptions = {
-	title: info.name,
-	description: info.description,
-	synopsis: [
-		"$ gitlint [bold]{--verbose} path/to/my/file"
-	]
-};
-
 function displayHelp() {
+	let info = require("./util/appInfo")(pathToPackageJson);
+
+	let usageOptions = {
+		title: info.name,
+		description: info.description,
+		synopsis: [
+			"$ gitlint [bold]{--verbose} path/to/my/file"
+		]
+	};
+
 	console.log(cli.getUsage(usageOptions)); // eslint-disable-line no-console
 }
 
 function displayVersion() {
+	let info = require("./util/appInfo")(pathToPackageJson);
 	console.log(info.longVersion); // eslint-disable-line no-console
 }
 
@@ -56,23 +60,24 @@ function getArguments() {
 	} catch (e) {
 		console.error(e.message); // eslint-disable-line no-console
 		displayHelp();
-		process.exit(1);
+		return process.exit(1);
 	}
 
 	if (options.help) {
 		displayHelp();
-		process.exit(0);
+		return process.exit(0);
 	}
 
 	if (options.version) {
 		displayVersion();
-		process.exit(0);
+		return process.exit(0);
 	}
 
 	return options;
 }
 
 module.exports = {
-	displayHelp: displayHelp,
-	getArguments: getArguments
+	displayHelp,
+	displayVersion,
+	getArguments
 };

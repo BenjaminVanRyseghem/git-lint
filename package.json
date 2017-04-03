@@ -46,7 +46,7 @@
     "node": ">=0.8"
   },
   "scripts": {
-		"test": "gulp"
+    "test": "gulp"
   },
   "dependencies": {
     "command-line-args": "^2.1.6",
@@ -59,16 +59,17 @@
   },
   "devDependencies": {
     "del": "^2.2.0",
-		"eslint-plugin-jasmine": "^2.2.0",
+    "eslint-plugin-jasmine": "^2.2.0",
     "gulp": "^3.9.1",
     "gulp-codacy": "^1.0.0",
     "gulp-eslint": "^2.0.0",
-		"gulp-flatmap": "^1.0.0",
+    "gulp-flatmap": "^1.0.0",
     "gulp-istanbul": "^0.10.3",
     "gulp-jasmine": "^2.3.0",
     "gulp-load-plugins": "^1.2.0",
     "gulp-strip-code": "^0.1.3",
     "jasmine": "^2.4.1",
-    "jasmine-reporters": "^2.1.1"
+    "jasmine-reporters": "^2.1.1",
+    "rewire": "^2.5.2"
   }
 }

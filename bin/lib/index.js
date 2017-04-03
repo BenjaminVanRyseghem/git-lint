@@ -68,7 +68,7 @@ function main() {
 		analyzeMessage(args.src, args, gitContext);
 	}).catch(function(reasonForFailure) {
 		output.error(reasonForFailure.message);
-		process.exit(1);
+		return process.exit(1);
 	});
 }
 
@@ -85,7 +85,7 @@ function analyzeMessage(commitMessageTmpFile, cliOptions, gitContext) {
 
 		if (!message) {
 			cli.displayHelp();
-			process.exit(1);
+			return process.exit(1);
 		}
 	} else {
 		dir = path.dirname(commitMessageTmpFile);
@@ -109,7 +109,7 @@ function analyzeMessage(commitMessageTmpFile, cliOptions, gitContext) {
 	let result = gitlint(message, options, extraContext);
 	output(result);
 
-	process.exit(result.isErrored() ? 1 : 0);
+	return process.exit(result.isErrored() ? 1 : 0);
 }
 
 module.exports = main;

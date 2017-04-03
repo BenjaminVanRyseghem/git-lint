@@ -1,7 +1,8 @@
-const output = require("./output");
 const pluginsConflict = "The plugin rule \"{{{rule}}}\" is already defined";
+const stringFormatter = require("../../lib/util/stringFormatter");
 
 module.exports = function(options) {
+
 	if (!options.plugins || !options.plugins.length) {
 		return {};
 	}
@@ -17,17 +18,17 @@ module.exports = function(options) {
 		try {
 			rules = require(name);
 		} catch (error) {
-			output.error(error.message);
-			process.exit(1);
+			console.error(stringFormatter(error.message)); // eslint-disable-line no-console
+			return process.exit(1);
 		}
 
 		if (rules.config) {
 			for (let name of Object.keys(rules.config)) {
 				let opt = rules.config[name];
 				if (result.config[name]) {
-					output.error(pluginsConflict, {
+					console.error(stringFormatter(pluginsConflict, { // eslint-disable-line no-console
 						rule: name
-					});
+					}));
 				} else {
 					result.config[name] = opt;
 				}
@@ -38,9 +39,9 @@ module.exports = function(options) {
 			for (let name of Object.keys(rules.rules)) {
 				let opt = rules.rules[name];
 				if (result.rules[name]) {
-					output.error(pluginsConflict, {
+					console.error(stringFormatter(pluginsConflict, { // eslint-disable-line no-console
 						rule: name
-					});
+					}));
 				} else {
 					result.rules[name] = opt;
 				}
