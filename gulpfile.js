@@ -6,10 +6,8 @@ let plugins = require("gulp-load-plugins")({
 	rename: {
 		"gulp-eslint": "eslint",
 		"gulp-jasmine": "jasmine",
-		"gulp-flatmap": "flatmap",
 		"gulp-istanbul": "istanbul",
-		"gulp-codacy": "codacy",
-		"grunt-strip-code": "stripCode"
+		"gulp-strip-code": "stripCode"
 	}
 });
 
@@ -20,26 +18,24 @@ let all = sources.slice().concat(tests).concat(misc);
 
 gulp.task("default", ["lint", "tests"]);
 
-gulp.task("js-lint", () => {
-	var pipeline = gulp.src(all)
+gulp.task("lint:js", () => {
+	return gulp.src(all)
 		.pipe(plugins.eslint())
 		.pipe(plugins.eslint.format("unix"))
 		.pipe(plugins.eslint.failAfterError());
-
-	return pipeline;
 });
 
-gulp.task("lint", ["js-lint"]);
+gulp.task("lint", ["lint:js"]);
 
 // Tests
 
-gulp.task("pre-test", () => {
+gulp.task("test:setup", () => {
 	return gulp.src(sources)
 		.pipe(plugins.istanbul())
 		.pipe(plugins.istanbul.hookRequire());
 });
 
-gulp.task("tests", ["pre-test"], () => {
+gulp.task("tests", ["test:setup"], () => {
 	return gulp.src(tests)
 		.pipe(plugins.jasmine({
 			reporter: new reporters.TerminalReporter()
@@ -48,7 +44,7 @@ gulp.task("tests", ["pre-test"], () => {
 	// .pipe(plugins.istanbul.enforceThresholds({thresholds: {global: 90}}));
 });
 
-gulp.task("jasmine", () => {
+gulp.task("test-without-coverage", () => {
 	return gulp.src(tests)
 		.pipe(plugins.jasmine());
 });
